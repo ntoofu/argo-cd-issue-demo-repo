@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: add-cluster
+spec:
+  template:
+    spec:
+      containers:
+      - name: add-cluster
+        image: alpine
+        command:
+        - "/bin/sh"
+        - "-c"
+        - |
+          mkdir -p $HOME/.kube
+          sed -e 's/kind-control-plane:6443/10.96.0.1/' /kubeconfig > $HOME/.kube/config
+          cat $HOME/.kube/config
+          wget -O argocd https://github.com/argoproj/argo-cd/releases/download/v1.8.5/argocd-linux-amd64
+          chmod +x argocd
+          ./argocd login argocd-server.argocd.svc.cluster.local --name argocd --username admin --password "password" --insecure
+          ./argocd cluster add kubernetes-admin@kind
+        volumeMounts:
+        - mountPath: /kubeconfig
+          name: kubeconfig
+          readOnly: true
+      restartPolicy: Never
+      volumes:
+      - hostPath:
+          path: /etc/kubernetes/admin.conf
+          type: File
+        name: kubeconfig
+  backoffLimit: 4
