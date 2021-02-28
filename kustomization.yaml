@@ -2,7 +2,7 @@ namespace: argocd
 
 resources:
 - namespace.yaml
-- "https://raw.githubusercontent.com/argoproj/argo-cd/v1.8.5/manifests/install.yaml"
+- "https://raw.githubusercontent.com/argoproj/argo-cd/master/manifests/install.yaml"
 - job.yaml
 - service-monitor.yaml
 
